@@ -1,0 +1,120 @@
+service: lifted-api
+
+frameworkVersion: ">=1.1.0"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+  environment:
+    TODOS_TABLE: ${self:service}-TODOS-${opt:stage, self:provider.stage}
+    WORKOUTS_TABLE: ${self:service}-WORKOUTS-${opt:stage, self:provider.stage}
+    CYCLES_TABLE: ${self:service}-CYCLES-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.WORKOUTS_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.CYCLES_TABLE}"
+
+functions:
+  createTodo:
+    handler: dist/services/todos/create.create
+    events:
+      - http:
+          path: todos
+          method: post
+          cors: true
+
+  createCycle:
+    handler: dist/services/cycles/index.create
+    events:
+      - http:
+          path: cycles
+          method: post
+          cors: true
+
+  createWorkout:
+    handler: dist/services/workouts/index.create
+    events:
+      - http:
+          path: workouts
+          method: post
+          cors: true
+  # list:
+  #   handler: dist/todos/list.list
+  #   events:
+  #     - http:
+  #         path: todos
+  #         method: get
+  #         cors: true
+
+  # get:
+  #   handler: dist/todos/get.get
+  #   events:
+  #     - http:
+  #         path: todos/{id}
+  #         method: get
+  #         cors: true
+
+  # update:
+  #   handler: dist/todos/update.update
+  #   events:
+  #     - http:
+  #         path: todos/{id}
+  #         method: put
+  #         cors: true
+
+resources:
+  Resources:
+    TodosDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.TODOS_TABLE}
+
+    WorkoutsDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.WORKOUTS_TABLE}
+
+    CyclesDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.CYCLES_TABLE}
