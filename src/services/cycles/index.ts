@@ -6,6 +6,9 @@ module.exports.create = async (event, context, callback) => {
 
   const params = {
     name,
+    weeks: 8,
+    completed: false,
+    userId: "12345",
   };
 
   try {

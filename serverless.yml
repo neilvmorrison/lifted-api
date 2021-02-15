@@ -7,9 +7,12 @@ provider:
   runtime: nodejs12.x
   region: us-east-1
   environment:
-    TODOS_TABLE: ${self:service}-TODOS-${opt:stage, self:provider.stage}
     WORKOUTS_TABLE: ${self:service}-WORKOUTS-${opt:stage, self:provider.stage}
     CYCLES_TABLE: ${self:service}-CYCLES-${opt:stage, self:provider.stage}
+    TODOS_TABLE: ${self:service}-TODOS-${opt:stage, self:provider.stage}
+    EXERCISES_TABLE: ${self:service}-EXERCISES-${opt:stage, self:provider.stage}
+    MOVEMENTS_TABLE: ${self:service}-MOVEMENTS-${opt:stage, self:provider.stage}
+    SETS_TABLE: ${self:service}-SETS-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -23,6 +26,9 @@ provider:
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}"
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.WORKOUTS_TABLE}"
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.CYCLES_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.EXERCISES_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MOVEMENTS_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SETS_TABLE}"
 
 functions:
   createTodo:
@@ -118,3 +124,48 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.CYCLES_TABLE}
+
+    SetsDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.SETS_TABLE}
+
+    ExercisesDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.EXERCISES_TABLE}
+
+    MovementsDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.MOVEMENTS_TABLE}

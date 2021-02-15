@@ -1,6 +1,15 @@
 import { DynamoDB } from "aws-sdk";
 import * as uuid from "uuid";
 
+import {
+  WorkoutParams,
+  CycleParams,
+  ToDoParams,
+  ExerciseParams,
+  MovementParams,
+  SetParams,
+} from "../models";
+
 const TABLES = {
   WORKOUTS: process.env.WORKOUTS_TABLE,
   TODOS: process.env.TODOS_TABLE,
@@ -17,45 +26,6 @@ export enum Tables {
   EXERCISES = "EXERCISES",
   MOVEMENTS = "MOVEMENTS",
   SETS = "SETS",
-}
-
-interface ToDoParams {
-  text: string;
-  checked: boolean;
-}
-
-interface CycleParams {
-  name: string;
-  initialBW?: number;
-  endBW?: number;
-  weeks: number;
-  completed: boolean;
-  userId: string; // sort key
-}
-
-interface WorkoutParams {
-  name: string;
-  notes: string;
-  completed: boolean;
-  cycleId: string;
-}
-
-interface ExerciseParams {
-  workoutId: string; // sort key
-  sets: number;
-}
-
-interface SetParams {
-  movementId: string; // sort key
-  reps: number;
-  weight: number;
-  completed: boolean;
-}
-
-interface MovementParams {
-  name: string;
-  imageUri: string;
-  description: string;
 }
 
 type CreateParams =
