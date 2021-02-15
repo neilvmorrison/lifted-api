@@ -4,13 +4,19 @@ import * as uuid from "uuid";
 const TABLES = {
   WORKOUTS: process.env.WORKOUTS_TABLE,
   TODOS: process.env.TODOS_TABLE,
-  CYCLE: process.env.CYCLES_TABLE,
+  CYCLES: process.env.CYCLES_TABLE,
+  EXERCISES: process.env.EXERCISES_TABLE,
+  MOVEMENTS: process.env.MOVEMENTS_TABLE,
+  SETS: process.env.SETS_TABLE,
 };
 
 export enum Tables {
   WORKOUTS = "WORKOUTS",
   CYCLES = "CYCLES",
   TODOS = "TODOS",
+  EXERCISES = "EXERCISES",
+  MOVEMENTS = "MOVEMENTS",
+  SETS = "SETS",
 }
 
 interface ToDoParams {
@@ -18,13 +24,47 @@ interface ToDoParams {
   checked: boolean;
 }
 
-interface WorkoutParams {}
-
 interface CycleParams {
   name: string;
+  initialBW?: number;
+  endBW?: number;
+  weeks: number;
+  completed: boolean;
+  userId: string; // sort key
 }
 
-type CreateParams = WorkoutParams | CycleParams | ToDoParams;
+interface WorkoutParams {
+  name: string;
+  notes: string;
+  completed: boolean;
+  cycleId: string;
+}
+
+interface ExerciseParams {
+  workoutId: string; // sort key
+  sets: number;
+}
+
+interface SetParams {
+  movementId: string; // sort key
+  reps: number;
+  weight: number;
+  completed: boolean;
+}
+
+interface MovementParams {
+  name: string;
+  imageUri: string;
+  description: string;
+}
+
+type CreateParams =
+  | WorkoutParams
+  | CycleParams
+  | ToDoParams
+  | ExerciseParams
+  | MovementParams
+  | SetParams;
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
